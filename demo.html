@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkeptikAI - Scam Detection Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .demo-note {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .examples {
+            margin: 20px 0;
+        }
+
+        .example-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .example-btn {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .threat-level {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .threat-critical {
+            background: #dc3545;
+            color: white;
+        }
+
+        .threat-high {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .threat-medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .threat-low {
+            background: #28a745;
+            color: white;
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 15px 0;
+        }
+
+        .red-flags {
+            margin: 20px 0;
+        }
+
+        .flag-item {
+            display: inline-block;
+            padding: 8px 15px;
+            background: #fff;
+            border: 2px solid #dc3545;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9em;
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .roast-response {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin-top: 20px;
+        }
+
+        .roast-response h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .roast-response p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #333;
+            font-style: italic;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ SkeptikAI</h1>
+            <p>AI-Powered Scam Detection & Response System</p>
+        </div>
+
+        <div class="demo-note">
+            ⚠️ This is a demonstration interface. The actual system runs on a private backend.
+        </div>
+
+        <div class="content">
+            <div class="input-section">
+                <label for="messageInput">Enter a message to analyze:</label>
+                <textarea id="messageInput" placeholder="Paste a suspicious email, text message, or call transcript here..."></textarea>
+                
+                <div class="examples">
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Try an example:</p>
+                    <div class="example-buttons">
+                        <button class="example-btn" data-example="phishing">Phishing Email</button>
+                        <button class="example-btn" data-example="irs">IRS Scam</button>
+                        <button class="example-btn" data-example="prize">Fake Prize</button>
+                        <button class="example-btn" data-example="romance">Romance Scam</button>
+                        <button class="example-btn" data-example="job">Fake Job</button>
+                    </div>
+                </div>
+
+                <button class="analyze-btn" onclick="analyzeMessage()">Analyze Message 🔍</button>
+            </div>
+
+            <div class="results" id="results">
+                <div class="section-title">Analysis Results</div>
+                <div class="threat-level" id="threatLevel">HIGH THREAT</div>
+                <div class="score-display" id="scoreDisplay">8.5/10</div>
+                
+                <div class="red-flags">
+                    <div class="section-title">🚩 Red Flags Detected:</div>
+                    <div id="flagsList"></div>
+                </div>
+
+                <div class="roast-response">
+                    <h3>💬 Generated Response:</h3>
+                    <p id="roastText"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const examples = {
+            phishing: {
+                text: "URGENT: Your Amazon account has been locked due to suspicious activity. Click here immediately to verify your identity: bit.ly/notascam123 or your account will be permanently closed in 24 hours.",
+                score: 8.5,
+                level: "HIGH",
+                flags: ["urgent", "suspicious activity", "click here", "shortened URL", "24 hour deadline", "account closure threat"],
+                roast: "Oh wow, Amazon is using bit.ly links now? How budget. Also, Amazon doesn't lock accounts via text message, and they definitely don't give scammers a 24-hour window to panic you into clicking sketchy links. Nice try though! 👎"
+            },
+            irs: {
+                text: "This is the IRS. You owe $5,847 in back taxes. Call 1-800-SCAMMER immediately or face legal action within 24 hours.",
+                score: 9.2,
+                level: "CRITICAL",
+                flags: ["IRS impersonation", "threatening language", "immediate action required", "suspicious phone number", "tax debt claim", "legal threats"],
+                roast: "Breaking news: The IRS learned how to text! Just kidding, they didn't. The real IRS contacts you via snail mail like it's 1995, not through panicked text messages with phone numbers that spell 'SCAMMER.' Also, they don't do same-day arrest threats. F for effort. 📉"
+            },
+            prize: {
+                text: "CONGRATULATIONS! You've been selected as the beneficiary of $2,500,000 USD from the Nigerian National Lottery. Send us your bank details and processing fee of $500 USD to claim.",
+                score: 9.8,
+                level: "CRITICAL",
+                flags: ["unsolicited prize", "Nigerian lottery", "bank details request", "upfront fee", "too good to be true", "random selection"],
+                roast: "Ah yes, the Nigerian prince's cousin is back with a new career in lottery management! Nothing says 'legitimate lottery' like asking winners to PAY to receive money. That's not how prizes work. That's how scams work. But hey, thanks for the laugh! 🤡"
+            },
+            romance: {
+                text: "Hi there! Could you remind me how we know each other? I have your number saved. I'm Lauren from San Jose, nice to meet you! [Attractive photo attached]",
+                score: 6.5,
+                level: "MEDIUM",
+                flags: ["pretends to know you", "vague connection", "attractive stranger", "random contact", "relationship building"],
+                roast: "Lauren from 'San Jose' (totally not a stock photo, right?) has my number saved but can't remember how we met? That's some selective amnesia right there. This is giving major catfish energy. Swipe left on this scam, friend. 🎣"
+            },
+            job: {
+                text: "Congratulations! You've been selected for a 2nd interview with Legacy Marketing Group. Join our Zoom call immediately. This is a work-from-home opportunity with unlimited earning potential!",
+                score: 7.0,
+                level: "HIGH",
+                flags: ["unsolicited job offer", "2nd interview without 1st", "vague company name", "unlimited earning", "immediate action", "MLM indicators"],
+                roast: "Second interview for a job you never applied to? That's either a miracle or a pyramid scheme. 'Legacy Marketing Group' sounds like it was named by a random company name generator. 'Unlimited earning potential' = you'll be harassing your friends to buy stuff they don't need. Hard pass. 🚫"
+            }
+        };
+
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const example = examples[this.dataset.example];
+                document.getElementById('messageInput').value = example.text;
+            });
+        });
+
+        function analyzeMessage() {
+            const text = document.getElementById('messageInput').value.trim();
+            
+            if (!text) {
+                alert('Please enter a message to analyze!');
+                return;
+            }
+
+            // Find matching example or use generic response
+            let result = null;
+            for (let key in examples) {
+                if (text === examples[key].text) {
+                    result = examples[key];
+                    break;
+                }
+            }
+
+            // Generic analysis for custom input
+            if (!result) {
+                result = analyzeCustomMessage(text);
+            }
+
+            displayResults(result);
+        }
+
+        function analyzeCustomMessage(text) {
+            const lowerText = text.toLowerCase();
+            let score = 0;
+            let flags = [];
+
+            // Simple keyword detection
+            const keywords = {
+                "urgent": 2.0,
+                "immediately": 2.0,
+                "verify": 1.8,
+                "click here": 1.5,
+                "suspended": 2.0,
+                "account": 1.3,
+                "prize": 1.3,
+                "congratulations": 1.3,
+                "bank": 3.0,
+                "password": 3.0,
+                "social security": 3.0
+            };
+
+            for (let keyword in keywords) {
+                if (lowerText.includes(keyword)) {
+                    score += keywords[keyword];
+                    flags.push(keyword);
+                }
+            }
+
+            let level = "LOW";
+            if (score >= 8) level = "CRITICAL";
+            else if (score >= 5) level = "HIGH";
+            else if (score >= 3) level = "MEDIUM";
+
+            const roasts = [
+                "This message has more red flags than a communist parade. Proceed with extreme caution! 🚩",
+                "If this were any more suspicious, it would be wearing a trench coat in a dark alley. Delete immediately. 🕵️",
+                "My scam detector just filed a restraining order against this message. Stay away! ⚠️",
+                "This has 'I learned English from a broken calculator' energy. Definitely a scam. 🧮"
+            ];
+
+            return {
+                score: Math.min(score, 10).toFixed(1),
+                level: level,
+                flags: flags.length > 0 ? flags : ["suspicious patterns detected"],
+                roast: roasts[Math.floor(Math.random() * roasts.length)]
+            };
+        }
+
+        function displayResults(result) {
+            const results = document.getElementById('results');
+            const threatLevel = document.getElementById('threatLevel');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const flagsList = document.getElementById('flagsList');
+            const roastText = document.getElementById('roastText');
+
+            // Update threat level
+            threatLevel.textContent = result.level + " THREAT";
+            threatLevel.className = "threat-level threat-" + result.level.toLowerCase();
+
+            // Update score
+            scoreDisplay.textContent = result.score + "/10";
+
+            // Update flags
+            flagsList.innerHTML = result.flags.map(flag => 
+                `<span class="flag-item">${flag}</span>`
+            ).join('');
+
+            // Update roast
+            roastText.textContent = result.roast;
+
+            // Show results
+            results.classList.add('show');
+            results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
