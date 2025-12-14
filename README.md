@@ -54,6 +54,5 @@ Architecture: Modular pipeline design for extensibility
 📬 Contact
 For access requests, collaboration inquiries, or technical discussions:
  LinkedIn: www.linkedin.com/in/alisa-tcurko-borisovna
- Email: alisa.tsurko@gmail.com
 
 Built with the frustration of dealing with too many family members falling for scams. Turned annoyance into automation.
